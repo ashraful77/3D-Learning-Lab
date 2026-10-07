@@ -53,7 +53,7 @@ Do not build the rest of the app until GLB loading, rendering, rotation, zoom, p
 ## Phase 3 — Content System
 - [ ] Subject model
 - [ ] Category model
-- [ ] Object model
+- [x] Object model
 - [ ] Model metadata
 - [ ] Part metadata
 - [ ] Label metadata
