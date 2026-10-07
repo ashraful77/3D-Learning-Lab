@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.ashraful.threedlearninglab.ui.LearningLabApp
+import com.ashraful.threedlearninglab.data.model.Learning3DObjectType
+import com.ashraful.threedlearninglab.ui.viewer3d.Learning3DViewer
 import com.ashraful.threedlearninglab.ui.theme.ThreeDLearningLabTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +21,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LearningLabApp()
+                    Learning3DViewer(
+                        title = "3D Learning Lab • GLB Prototype",
+                        objectType = Learning3DObjectType.GLB
+                    )
                 }
             }
         }
