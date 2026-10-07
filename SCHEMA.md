@@ -42,6 +42,9 @@ Fields:
 
 Stable IDs include cube, sphere, cylinder, cone, heart and atom.
 
+## Domain Model Implementation
+The Android domain layer represents each educational 3D object with a stable ID, subject/category IDs, object type, optional model file, description and capabilities. Rendering remains separate from this data model.
+
 ## Model Metadata
 Fields:
 - file
