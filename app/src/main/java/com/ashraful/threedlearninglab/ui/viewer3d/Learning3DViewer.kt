@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.sceneview.SceneView
 import io.github.sceneview.math.Position
@@ -55,8 +57,17 @@ fun Learning3DViewer(
                     targetPosition = Position()
                 )
             ) {
+                val cubeMaterial = remember(materialLoader) {
+                    materialLoader.createColorInstance(
+                        color = Color(0.22f, 0.55f, 0.95f, 1f),
+                        metallic = 0f,
+                        roughness = 0.6f
+                    )
+                }
+
                 CubeNode(
                     size = Size(1.0f),
+                    materialInstance = cubeMaterial,
                     rotation = Rotation(y = rotationY)
                 )
             }
@@ -79,6 +90,7 @@ fun Learning3DViewer(
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
                 .padding(12.dp),
             shape = MaterialTheme.shapes.large,
             tonalElevation = 6.dp
