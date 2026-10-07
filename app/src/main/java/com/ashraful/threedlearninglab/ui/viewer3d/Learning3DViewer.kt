@@ -32,7 +32,6 @@ import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.SphereNode
 import kotlinx.coroutines.delay
 
-@Composable
 enum class ViewerShape(val label: String) {
     Cube("Cube"),
     Sphere("Sphere"),
