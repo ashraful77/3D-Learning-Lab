@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.ashraful.threedlearninglab.ui.Prototype3DScene
+import com.ashraful.threedlearninglab.ui.LearningLabApp
 import com.ashraful.threedlearninglab.ui.theme.ThreeDLearningLabTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Prototype3DScene()
+                    LearningLabApp()
                 }
             }
         }
