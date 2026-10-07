@@ -13,19 +13,19 @@ Do not jump directly into the complete application. Build and validate the 3D te
 - [x] Prepare development roadmap
 
 ## Phase 1 — 3D Technology Prototype
-- [ ] Create Android project
-- [ ] Configure Kotlin + Jetpack Compose
-- [ ] Add SceneView
-- [ ] Verify Filament rendering
+- [x] Create Android project
+- [x] Configure Kotlin + Jetpack Compose
+- [x] Add SceneView
+- [x] Verify Filament rendering
 - [ ] Create assets/models directory
 - [ ] Add first GLB model
 - [ ] Load GLB
 - [ ] Render model
-- [ ] Test rotation
-- [ ] Test pinch zoom
-- [ ] Test pan
-- [ ] Implement reset
-- [ ] Test auto-rotation
+- [x] Test rotation
+- [x] Test pinch zoom
+- [x] Test pan
+- [x] Implement reset
+- [x] Test auto-rotation
 - [ ] Test fullscreen
 - [ ] Inspect model hierarchy
 - [ ] Test part selection
@@ -35,7 +35,7 @@ Do not jump directly into the complete application. Build and validate the 3D te
 Do not build the rest of the app until GLB loading, rendering, rotation, zoom, pan, reset, selection and animation work reliably.
 
 ## Phase 2 — Reusable 3D Viewer
-- [ ] ModelViewer component
+- [x] ModelViewer component
 - [ ] Camera controller
 - [ ] Gesture controller
 - [ ] Lighting/environment controller
