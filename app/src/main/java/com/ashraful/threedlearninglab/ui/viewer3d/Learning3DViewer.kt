@@ -26,13 +26,25 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Size
 import io.github.sceneview.rememberCameraManipulator
+import io.github.sceneview.node.ConeNode
 import io.github.sceneview.node.CubeNode
+import io.github.sceneview.node.CylinderNode
+import io.github.sceneview.node.SphereNode
 import kotlinx.coroutines.delay
 
 @Composable
+enum class ViewerShape(val label: String) {
+    Cube("Cube"),
+    Sphere("Sphere"),
+    Cylinder("Cylinder"),
+    Cone("Cone")
+}
+
+@Composable
 fun Learning3DViewer(
-    title: String = "3D Learning Lab • Cube",
+    title: String = "3D Learning Lab",
     modifier: Modifier = Modifier,
+    shape: ViewerShape = ViewerShape.Cube,
 ) {
     var autoRotate by remember { mutableStateOf(false) }
     var rotationY by remember { mutableFloatStateOf(0f) }
@@ -55,10 +67,12 @@ fun Learning3DViewer(
                     targetPosition = Position()
                 )
             ) {
-                CubeNode(
-                    size = Size(1.0f),
-                    rotation = Rotation(y = rotationY)
-                )
+                when (shape) {
+                    ViewerShape.Cube -> CubeNode(size = Size(1.0f), rotation = Rotation(y = rotationY))
+                    ViewerShape.Sphere -> SphereNode(radius = 0.75f, rotation = Rotation(y = rotationY))
+                    ViewerShape.Cylinder -> CylinderNode(radius = 0.6f, height = 1.4f, rotation = Rotation(y = rotationY))
+                    ViewerShape.Cone -> ConeNode(radius = 0.75f, height = 1.4f, rotation = Rotation(y = rotationY))
+                }
             }
         }
 
