@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.ashraful.threedlearninglab"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.ashraful.threedlearninglab"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
     }
@@ -40,6 +40,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("io.github.sceneview:sceneview:4.52.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
