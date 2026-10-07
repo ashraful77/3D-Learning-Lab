@@ -29,8 +29,10 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Size
 import io.github.sceneview.node.CubeNode
+import io.github.sceneview.node.ModelNode
 import io.github.sceneview.node.SphereNode
 import io.github.sceneview.rememberCameraManipulator
+import io.github.sceneview.rememberModelInstance
 import kotlinx.coroutines.delay
 
 @Composable
@@ -80,6 +82,19 @@ fun Learning3DViewer(
                 }
 
                 when (objectType) {
+                    Learning3DObjectType.GLB -> {
+                        rememberModelInstance(
+                            modelLoader,
+                            "models/prototype-cube.glb"
+                        )?.let { instance ->
+                            ModelNode(
+                                modelInstance = instance,
+                                scaleToUnits = 1.0f,
+                                rotation = Rotation(y = rotationY)
+                            )
+                        }
+                    }
+
                     Learning3DObjectType.SPHERE -> SphereNode(
                         radius = 0.65f,
                         materialInstance = faceMaterials[0],
