@@ -57,18 +57,34 @@ fun Learning3DViewer(
                     targetPosition = Position()
                 )
             ) {
-                val cubeMaterial = remember(materialLoader) {
-                    materialLoader.createColorInstance(
-                        color = Color(0.22f, 0.55f, 0.95f, 1f),
-                        metallic = 0f,
-                        roughness = 0.6f
-                    )
+                val faceColors = listOf(
+                    Color(0.20f, 0.55f, 0.95f, 1f),
+                    Color(0.95f, 0.35f, 0.35f, 1f),
+                    Color(0.25f, 0.75f, 0.45f, 1f),
+                    Color(0.98f, 0.72f, 0.20f, 1f),
+                    Color(0.65f, 0.40f, 0.90f, 1f),
+                    Color(0.20f, 0.75f, 0.80f, 1f)
+                )
+
+                val faceMaterials = faceColors.map { color ->
+                    remember(materialLoader, color) {
+                        materialLoader.createColorInstance(
+                            color = color,
+                            metallic = 0f,
+                            roughness = 0.6f
+                        )
+                    }
                 }
 
                 CubeNode(
                     size = Size(1.0f),
-                    materialInstance = cubeMaterial,
-                    rotation = Rotation(y = rotationY)
+                    materialInstance = faceMaterials[0],
+                    rotation = Rotation(y = rotationY),
+                    apply = {
+                        for (index in 1 until faceMaterials.size) {
+                            setMaterialInstanceAt(index, faceMaterials[index])
+                        }
+                    }
                 )
             }
         }
