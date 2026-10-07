@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.ashraful.threedlearninglab.ui.viewer3d.Learning3DViewer
+import com.ashraful.threedlearninglab.ui.viewer3d.ViewerShape
 
 @Composable
 fun Prototype3DScene() {
