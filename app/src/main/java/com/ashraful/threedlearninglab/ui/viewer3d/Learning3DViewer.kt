@@ -51,7 +51,7 @@ fun Learning3DViewer(
         key(resetToken) {
             SceneView(
                 modifier = Modifier.fillMaxSize(),
-                autoFitContent = true,
+                autoFitContent = false,
                 cameraManipulator = rememberCameraManipulator(
                     orbitHomePosition = Position(z = 2.75f),
                     targetPosition = Position()
