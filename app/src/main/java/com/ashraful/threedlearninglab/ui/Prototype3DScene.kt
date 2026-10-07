@@ -8,6 +8,6 @@ import com.ashraful.threedlearninglab.ui.viewer3d.Learning3DViewer
 fun Prototype3DScene() {
     Learning3DViewer(
         modifier = Modifier,
-        title = "3D Learning Lab • Cube"
+        title = "3D Learning Lab • Sphere"
     )
 }
