@@ -29,11 +29,12 @@ import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Size
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.node.CubeNode
+import io.github.sceneview.node.SphereNode
 import kotlinx.coroutines.delay
 
 @Composable
 fun Learning3DViewer(
-    title: String = "3D Learning Lab • Cube",
+    title: String = "3D Learning Lab • Sphere",
     modifier: Modifier = Modifier,
 ) {
     var autoRotate by remember { mutableStateOf(false) }
@@ -76,15 +77,10 @@ fun Learning3DViewer(
                     }
                 }
 
-                CubeNode(
-                    size = Size(1.0f),
+                SphereNode(
+                    radius = 0.65f,
                     materialInstance = faceMaterials[0],
-                    rotation = Rotation(y = rotationY),
-                    apply = {
-                        for (index in 1 until faceMaterials.size) {
-                            setMaterialInstanceAt(index, faceMaterials[index])
-                        }
-                    }
+                    rotation = Rotation(y = rotationY)
                 )
             }
         }
