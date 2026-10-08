@@ -14,9 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,9 +59,7 @@ fun Learning3DViewer(
         null
     }
 
-    var autoRotate by remember { mutableStateOf(false) }
-    var rotationY by remember { mutableFloatStateOf(0f) }
-    var resetToken by remember { mutableIntStateOf(0) }
+    val viewerState = rememberViewer3DState()
     var loadTimedOut by remember { mutableStateOf(false) }
 
     LaunchedEffect(objectType, glbInstance) {
@@ -75,9 +70,9 @@ fun Learning3DViewer(
         }
     }
 
-    LaunchedEffect(autoRotate) {
-        while (autoRotate) {
-            rotationY = (rotationY + 1.2f) % 360f
+    LaunchedEffect(viewerState.autoRotate) {
+        while (viewerState.autoRotate) {
+            viewerState.rotationY = (viewerState.rotationY + 1.2f) % 360f
             delay(16L)
         }
     }
@@ -92,7 +87,7 @@ fun Learning3DViewer(
                     intensity = 100_000f
                 },
                 cameraManipulator = rememberCameraManipulator(
-                    orbitRadius = 3.5f + (resetToken * 0.001f),
+                    orbitRadius = 3.5f + (viewerState.resetToken * 0.001f),
                     targetPosition = Position()
                 )
             ) {
@@ -121,7 +116,7 @@ fun Learning3DViewer(
                             ModelNode(
                                 modelInstance = instance,
                                 scaleToUnits = 1.0f,
-                                rotation = Rotation(y = rotationY)
+                                rotation = Rotation(y = viewerState.rotationY)
                             )
                         }
                     }
@@ -194,15 +189,13 @@ fun Learning3DViewer(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    autoRotate = false
-                    rotationY = 0f
-                    resetToken++
+                    viewerState.reset()
                 }) {
                     Text("Reset View")
                 }
 
-                Button(onClick = { autoRotate = !autoRotate }) {
-                    Text(if (autoRotate) "Stop Rotate" else "Auto Rotate")
+                Button(onClick = { viewerState.toggleAutoRotate() }) {
+                    Text(if (viewerState.autoRotate) "Stop Rotate" else "Auto Rotate")
                 }
             }
         }
