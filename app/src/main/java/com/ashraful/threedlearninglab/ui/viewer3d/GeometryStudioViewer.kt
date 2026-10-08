@@ -320,4 +320,3 @@ private fun dimensionLines(shape: GeometryShape): List<String> = when (shape) {
     GeometryShape.TORUS_KNOT -> listOf("Major radius: 1.05", "Tube radius: 0.30", "Type: (2,3)")
     GeometryShape.CAPSULE -> listOf("Radius: 0.8", "Cylinder height: 1.4")
 }
-\n
