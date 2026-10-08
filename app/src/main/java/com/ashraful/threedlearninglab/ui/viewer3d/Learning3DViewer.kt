@@ -91,6 +91,11 @@ fun Learning3DViewer(
                 engine = engine,
                 modelLoader = modelLoader,
                 autoFitContent = false,
+                onGestureListener = rememberOnGestureListener(
+                    onSingleTapConfirmed = { _, node ->
+                        selectedNode = node?.name
+                    }
+                ),
                 mainLightNode = rememberMainLightNode(engine) {
                     intensity = 100_000f
                 },
@@ -123,7 +128,7 @@ fun Learning3DViewer(
                         glbInstance?.let { instance ->
                             ModelNode(
                                 modelInstance = instance,
-                                scaleToUnits = 1.0f,
+                                scaleToUnits = if (selectedNode == "Prototype Cube") 1.12f else 1.0f,
                                 rotation = Rotation(y = rotationY),
                                 apply = {
                                     isTouchable = true
@@ -196,7 +201,7 @@ fun Learning3DViewer(
                 tonalElevation = 8.dp
             ) {
                 Text(
-                    text = "Selected: $selectedNode",
+                    text = "✓ Selected: $selectedNode",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
