@@ -49,16 +49,21 @@ fun Learning3DViewer(
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
 
+    val modelAsset = when (objectType) {
+        Learning3DObjectType.MULTIPART_GLB -> "models/multipart-prototype.glb"
+        else -> "models/prototype-cube.glb"
+    }
+
     val glbAssetExists = remember(context, objectType) {
-        if (objectType != Learning3DObjectType.GLB) true
+        if (objectType != Learning3DObjectType.GLB && objectType != Learning3DObjectType.MULTIPART_GLB) true
         else runCatching {
-            context.assets.open("models/prototype-cube.glb").use { }
+            context.assets.open(modelAsset).use { }
             true
         }.getOrDefault(false)
     }
 
-    val glbInstance = if (objectType == Learning3DObjectType.GLB) {
-        rememberModelInstance(modelLoader, "models/prototype-cube.glb")
+    val glbInstance = if (objectType == Learning3DObjectType.GLB || objectType == Learning3DObjectType.MULTIPART_GLB) {
+        rememberModelInstance(modelLoader, modelAsset)
     } else {
         null
     }
@@ -72,7 +77,7 @@ fun Learning3DViewer(
     LaunchedEffect(objectType, glbInstance) {
         loadTimedOut = false
         selectedNode = null
-        if (objectType == Learning3DObjectType.GLB && glbInstance == null) {
+        if ((objectType == Learning3DObjectType.GLB || objectType == Learning3DObjectType.MULTIPART_GLB) && glbInstance == null) {
             delay(5000L)
             loadTimedOut = true
         }
@@ -124,7 +129,7 @@ fun Learning3DViewer(
                 }
 
                 when (objectType) {
-                    Learning3DObjectType.GLB -> {
+                    Learning3DObjectType.GLB, Learning3DObjectType.MULTIPART_GLB -> {
                         glbInstance?.let { instance ->
                             ModelNode(
                                 modelInstance = instance,
@@ -171,7 +176,7 @@ fun Learning3DViewer(
             )
         }
 
-        if (objectType == Learning3DObjectType.GLB) {
+        if (objectType == Learning3DObjectType.GLB || objectType == Learning3DObjectType.MULTIPART_GLB) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -182,7 +187,7 @@ fun Learning3DViewer(
                 Text(
                     text = when {
                         !glbAssetExists -> "GLB asset missing from APK"
-                        glbInstance != null -> "GLB loaded"
+                        glbInstance != null -> if (objectType == Learning3DObjectType.MULTIPART_GLB) "Multi-part GLB loaded" else "GLB loaded"
                         loadTimedOut -> "GLB asset found, but model failed to load"
                         else -> "Loading GLB…"
                     },
@@ -201,7 +206,7 @@ fun Learning3DViewer(
                 tonalElevation = 8.dp
             ) {
                 Text(
-                    text = "✓ Selected: $selectedNode",
+                    text = "✓ Selected part: $selectedNode",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
