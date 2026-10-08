@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -83,8 +82,7 @@ fun SolarSystemViewer(
     var showOrbits by remember { mutableStateOf(true) }
     var speed by remember { mutableFloatStateOf(1f) }
     var selectedTarget by remember { mutableStateOf("overview") }
-    var resetToken by remember { mutableIntStateOf(0) }
-
+    
     val angles = remember {
         MutableList(planets.size) { index -> index * 0.72f }
     }
@@ -94,8 +92,7 @@ fun SolarSystemViewer(
             planets.indices.forEach { index ->
                 angles[index] = (angles[index] + planets[index].speed * speed) % (Math.PI.toFloat() * 2f)
             }
-            resetToken++
-            delay(33L)
+                        delay(33L)
         }
     }
 
@@ -113,7 +110,7 @@ fun SolarSystemViewer(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        androidx.compose.runtime.key(selectedTarget, resetToken) {
+        androidx.compose.runtime.key(selectedTarget) {
             SceneView(
                 modifier = Modifier.fillMaxSize(),
                 engine = engine,
@@ -296,7 +293,6 @@ fun SolarSystemViewer(
 
                     Button(onClick = {
                         selectedTarget = "overview"
-                        resetToken++
                     }) {
                         Text("Reset Camera")
                     }
