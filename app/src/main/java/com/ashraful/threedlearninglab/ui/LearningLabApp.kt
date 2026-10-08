@@ -352,7 +352,10 @@ private fun ObjectDetails(
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        Button(onClick = onBack, modifier = Modifier.padding(top = 12.dp)) {
+        Button(
+            onClick = onBack,
+            modifier = Modifier.padding(top = 12.dp)
+        ) {
             Text("← 3D Objects")
         }
 
@@ -362,36 +365,76 @@ private fun ObjectDetails(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text(objectItem.name, style = MaterialTheme.typography.headlineMedium)
-                Text(
-                    objectItem.description,
-                    modifier = Modifier.padding(top = 4.dp),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-            item { InfoCard("Class Levels", objectItem.metadata.classLevels.joinToString(" • ")) }
-            item { InfoCard("Definition", info.definition) }
-            if (info.keyPoints.isNotEmpty()) item { BulletCard("Key Points", info.keyPoints) }
-            if (objectItem.parts.isNotEmpty()) {
-                item {
-                    BulletCard("Parts", objectItem.parts.map { "${it.name}: ${it.description}" })
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Text(
+                            objectItem.name,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text(
+                            objectItem.description,
+                            modifier = Modifier.padding(top = 6.dp),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        if (objectItem.metadata.classLevels.isNotEmpty()) {
+                            Text(
+                                "Class: " + objectItem.metadata.classLevels.joinToString(" • "),
+                                modifier = Modifier.padding(top = 10.dp),
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                    }
                 }
             }
-            if (info.formulas.isNotEmpty()) item { BulletCard("Formulas", info.formulas) }
-            if (info.teacherTips.isNotEmpty()) item { BulletCard("Teacher Tips", info.teacherTips) }
+
+            item { InfoCard("Definition", info.definition) }
+
+            if (info.keyPoints.isNotEmpty()) {
+                item { BulletCard("Key Points", info.keyPoints) }
+            }
+
+            if (objectItem.parts.isNotEmpty()) {
+                item {
+                    BulletCard(
+                        "Parts",
+                        objectItem.parts.map { part ->
+                            if (part.description.isBlank()) part.name
+                            else "${part.name}: ${part.description}"
+                        }
+                    )
+                }
+            }
+
+            if (info.formulas.isNotEmpty()) {
+                item { BulletCard("Formulas", info.formulas) }
+            }
+
+            if (info.teacherTips.isNotEmpty()) {
+                item { BulletCard("Teacher Tips", info.teacherTips) }
+            }
+
             if (info.discussionQuestions.isNotEmpty()) {
                 item { BulletCard("Discussion Questions", info.discussionQuestions) }
             }
+
             if (info.realWorldApplications.isNotEmpty()) {
                 item { BulletCard("Real-World Applications", info.realWorldApplications) }
             }
-            item {
-                InfoCard(
-                    "Capabilities",
-                    objectItem.capabilities.sortedBy { it.name }.joinToString(" • ") { capabilityLabel(it) }
-                )
+
+            if (objectItem.capabilities.isNotEmpty()) {
+                item {
+                    InfoCard(
+                        "3D Interaction",
+                        objectItem.capabilities
+                            .sortedBy { it.name }
+                            .joinToString(" • ") { capabilityLabel(it) }
+                    )
+                }
             }
-            item { InfoCard("Tags", objectItem.metadata.tags.joinToString(" • ")) }
+
+            if (objectItem.metadata.tags.isNotEmpty()) {
+                item { InfoCard("Topics", objectItem.metadata.tags.joinToString(" • ")) }
+            }
         }
 
         Button(
