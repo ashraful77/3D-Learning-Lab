@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.google.android.filament.MaterialInstance
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -80,7 +79,6 @@ fun GeometryStudioViewer(
     var rotationY by remember { mutableFloatStateOf(0f) }
     var resetToken by remember { mutableIntStateOf(0) }
     var colorIndex by remember { mutableIntStateOf(0) }
-    var wireframe by remember { mutableStateOf(false) }
 
     LaunchedEffect(autoRotate) {
         while (autoRotate) {
@@ -96,10 +94,6 @@ fun GeometryStudioViewer(
             roughness = 0.38f
         )
     }
-    val wireframeMaterial = remember(materialLoader) {
-        materialLoader.createColorInstance(Color.White, unlit = true)
-    }
-
     Box(modifier = modifier.fillMaxSize()) {
         SceneView(
             modifier = Modifier.fillMaxSize(),
@@ -260,17 +254,6 @@ fun GeometryStudioViewer(
                     ) {
                         Text("Reset View", maxLines = 1, fontSize = 12.sp)
                     }
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(horizontal = 6.dp),
-                        onClick = { wireframe = !wireframe }
-                    ) {
-                        Text(
-                            if (wireframe) "Wireframe: On" else "Wireframe: Off",
-                            maxLines = 1,
-                            fontSize = 11.sp
-                        )
-                    }
                 }
 
                 Row(
@@ -298,102 +281,5 @@ fun GeometryStudioViewer(
                 }
             }
         }
-    }
-}
-
-
-@Composable
-private fun GeometryWireframe(
-    shape: GeometryShape,
-    rotationY: Float,
-    material: MaterialInstance
-) {
-    Node(rotation = Rotation(y = rotationY)) {
-        when (shape) {
-            GeometryShape.CUBE -> {
-                val p = listOf(
-                    Position(-1f,-1f,-1f), Position(1f,-1f,-1f),
-                    Position(1f,1f,-1f), Position(-1f,1f,-1f),
-                    Position(-1f,-1f,1f), Position(1f,-1f,1f),
-                    Position(1f,1f,1f), Position(-1f,1f,1f)
-                )
-                listOf(0 to 1,1 to 2,2 to 3,3 to 0,4 to 5,5 to 6,6 to 7,7 to 4,0 to 4,1 to 5,2 to 6,3 to 7)
-                    .forEach { (a,b) -> LineNode(start=p[a], end=p[b], materialInstance=material) }
-            }
-            GeometryShape.SPHERE -> {
-                val radius = 1.405f
-                for (lat in -3..3) {
-                    val phi = Math.PI * lat / 6.0
-                    PathNode(points=circlePoints(radius*kotlin.math.cos(phi).toFloat(),radius*kotlin.math.sin(phi).toFloat(),24),closed=true,materialInstance=material)
-                }
-                for (lon in 0 until 8) {
-                    val theta=2.0*Math.PI*lon/8.0
-                    PathNode(points=(0..24).map { i ->
-                        val phi=-Math.PI/2.0+Math.PI*i/24.0
-                        Position(radius*kotlin.math.cos(phi).toFloat()*kotlin.math.cos(theta).toFloat(),radius*kotlin.math.sin(phi).toFloat(),radius*kotlin.math.cos(phi).toFloat()*kotlin.math.sin(theta).toFloat())
-                    },materialInstance=material)
-                }
-            }
-            GeometryShape.CYLINDER -> cylinderWireframe(1f,1.2f,32,material)
-            GeometryShape.CONE -> coneWireframe(1.3f,1.3f,32,material)
-            GeometryShape.PYRAMID -> coneWireframe(1.6f,1.2f,4,material)
-            GeometryShape.TORUS, GeometryShape.TORUS_KNOT -> torusWireframe(
-                if(shape==GeometryShape.TORUS) 1.2f else 1.05f,
-                if(shape==GeometryShape.TORUS) 0.45f else 0.30f,
-                24,10,material
-            )
-            GeometryShape.CAPSULE -> cylinderWireframe(0.8f,0.7f,24,material)
-        }
-    }
-}
-
-private fun circlePoints(radius: Float,y: Float,segments: Int): List<Position> =
-    (0 until segments).map { i ->
-        val a=2.0*Math.PI*i/segments
-        Position(radius*kotlin.math.cos(a).toFloat(),y,radius*kotlin.math.sin(a).toFloat())
-    }
-
-@Composable
-private fun cylinderWireframe(radius: Float,halfHeight: Float,segments: Int,material: MaterialInstance) {
-    PathNode(points=circlePoints(radius,-halfHeight,segments),closed=true,materialInstance=material)
-    PathNode(points=circlePoints(radius,halfHeight,segments),closed=true,materialInstance=material)
-    for(i in 0 until segments){
-        val a=2.0*Math.PI*i/segments
-        val x=radius*kotlin.math.cos(a).toFloat()
-        val z=radius*kotlin.math.sin(a).toFloat()
-        LineNode(start=Position(x,-halfHeight,z),end=Position(x,halfHeight,z),materialInstance=material)
-    }
-}
-
-@Composable
-private fun coneWireframe(radius: Float,halfHeight: Float,segments: Int,material: MaterialInstance) {
-    PathNode(points=circlePoints(radius,-halfHeight,segments),closed=true,materialInstance=material)
-    for(i in 0 until segments){
-        val a=2.0*Math.PI*i/segments
-        LineNode(
-            start=Position(radius*kotlin.math.cos(a).toFloat(),-halfHeight,radius*kotlin.math.sin(a).toFloat()),
-            end=Position(0f,halfHeight,0f),
-            materialInstance=material
-        )
-    }
-}
-
-@Composable
-private fun torusWireframe(majorRadius: Float,minorRadius: Float,majorSegments: Int,minorSegments: Int,material: MaterialInstance) {
-    for(ui in 0 until majorSegments){
-        val u=2.0*Math.PI*ui/majorSegments
-        PathNode(points=(0 until minorSegments).map { vi ->
-            val v=2.0*Math.PI*vi/minorSegments
-            val r=majorRadius+minorRadius*kotlin.math.cos(v).toFloat()
-            Position(r*kotlin.math.cos(u).toFloat(),minorRadius*kotlin.math.sin(v).toFloat(),r*kotlin.math.sin(u).toFloat())
-        },closed=true,materialInstance=material)
-    }
-    for(vi in 0 until minorSegments){
-        val v=2.0*Math.PI*vi/minorSegments
-        PathNode(points=(0 until majorSegments).map { ui ->
-            val u=2.0*Math.PI*ui/majorSegments
-            val r=majorRadius+minorRadius*kotlin.math.cos(v).toFloat()
-            Position(r*kotlin.math.cos(u).toFloat(),minorRadius*kotlin.math.sin(v).toFloat(),r*kotlin.math.sin(u).toFloat())
-        },closed=true,materialInstance=material)
     }
 }
