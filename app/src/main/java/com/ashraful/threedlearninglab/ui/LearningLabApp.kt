@@ -52,6 +52,7 @@ fun LearningLabApp() {
             val name = when (selectedObject) {
                 Learning3DObjectType.CUBE -> "Cube"
                 Learning3DObjectType.SPHERE -> "Sphere"
+                Learning3DObjectType.MULTIPART_GLB -> "Multi-Part Test"
                 else -> "3D Object"
             }
 
@@ -161,10 +162,16 @@ private fun ObjectMenu(
             items(
                 listOf(
                     Learning3DObjectType.CUBE,
-                    Learning3DObjectType.SPHERE
+                    Learning3DObjectType.SPHERE,
+                    Learning3DObjectType.MULTIPART_GLB
                 )
             ) { objectType ->
-                val name = if (objectType == Learning3DObjectType.CUBE) "Cube" else "Sphere"
+                val name = when (objectType) {
+                    Learning3DObjectType.CUBE -> "Cube"
+                    Learning3DObjectType.SPHERE -> "Sphere"
+                    Learning3DObjectType.MULTIPART_GLB -> "Multi-Part Test"
+                    else -> "3D Object"
+                }
                 Card {
                     Button(
                         onClick = { onObjectSelected(objectType) },
