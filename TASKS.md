@@ -17,10 +17,10 @@ Do not jump directly into the complete application. Build and validate the 3D te
 - [x] Configure Kotlin + Jetpack Compose
 - [x] Add SceneView
 - [x] Verify Filament rendering
-- [ ] Create assets/models directory
-- [ ] Add first GLB model
-- [ ] Load GLB
-- [ ] Render model
+- [x] Create assets/models directory
+- [x] Add first GLB model
+- [x] Load GLB
+- [x] Render model
 - [x] Test rotation
 - [x] Test pinch zoom
 - [x] Test pan
@@ -32,7 +32,13 @@ Do not jump directly into the complete application. Build and validate the 3D te
 - [ ] Test animation
 
 ### Decision Gate
-Do not build the rest of the app until GLB loading, rendering, rotation, zoom, pan, reset, selection and animation work reliably.
+GLB loading, rendering, rotation, zoom, pan and reset have now been validated on a real phone.
+
+Still required before declaring the full 3D technology gate complete:
+- [ ] Test part selection
+- [ ] Test model animation
+
+Do not build the full application/content navigation until these two remaining 3D technology checks are validated.
 
 ## Phase 2 — Reusable 3D Viewer
 - [x] ModelViewer component
@@ -41,13 +47,13 @@ Do not build the rest of the app until GLB loading, rendering, rotation, zoom, p
 - [ ] Lighting/environment controller
 - [ ] Model loader abstraction
 - [ ] Viewer state
-- [ ] Loading state
-- [ ] Error state
-- [ ] Viewer controls
+- [x] Loading state
+- [x] Error state
+- [x] Viewer controls
 - [ ] Fullscreen
-- [ ] Reset
-- [ ] Auto-rotate
-- [ ] Phone testing
+- [x] Reset
+- [x] Auto-rotate
+- [x] Phone testing
 - [ ] Tablet testing
 
 ## Phase 3 — Content System
