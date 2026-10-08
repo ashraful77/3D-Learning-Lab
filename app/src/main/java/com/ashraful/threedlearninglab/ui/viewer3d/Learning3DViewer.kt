@@ -1,5 +1,9 @@
 package com.ashraful.threedlearninglab.ui.viewer3d
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -7,11 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.material3.Button
+import androidx.material3.MaterialTheme
+import androidx.material3.Surface
+import androidx.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -46,6 +53,7 @@ fun Learning3DViewer(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val activity = remember(context) { context.findActivity() }
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
 
@@ -73,6 +81,32 @@ fun Learning3DViewer(
     var resetToken by remember { mutableIntStateOf(0) }
     var loadTimedOut by remember { mutableStateOf(false) }
     var selectedNode by remember { mutableStateOf<String?>(null) }
+    var fullscreen by remember { mutableStateOf(false) }
+
+    fun setFullscreen(enabled: Boolean) {
+        fullscreen = enabled
+        activity?.let { window ->
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            if (enabled) {
+                controller.hide(WindowInsetsCompat.Type.systemBars())
+            } else {
+                controller.show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+    }
+
+    BackHandler(enabled = fullscreen) {
+        setFullscreen(false)
+    }
+
+    DisposableEffect(activity) {
+        onDispose {
+            activity?.let { window ->
+                WindowCompat.getInsetsController(window, window.decorView)
+                    .show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+    }
 
     LaunchedEffect(objectType, glbInstance) {
         loadTimedOut = false
@@ -92,92 +126,93 @@ fun Learning3DViewer(
 
     Box(modifier = modifier.fillMaxSize()) {
         SceneView(
-                modifier = Modifier.fillMaxSize(),
-                engine = engine,
-                modelLoader = modelLoader,
-                autoFitContent = false,
-                onGestureListener = rememberOnGestureListener(
-                    onSingleTapConfirmed = { _, node ->
-                        selectedNode = node?.name
-                    }
-                ),
-                mainLightNode = rememberMainLightNode(engine) {
-                    intensity = 100_000f
-                },
-                cameraManipulator = rememberCameraManipulator(
-                    orbitRadius = 3.5f + (resetToken * 0.001f),
-                    targetPosition = Position()
-                )
-            ) {
-                val faceColors = listOf(
-                    Color(0.20f, 0.55f, 0.95f, 1f),
-                    Color(0.95f, 0.35f, 0.35f, 1f),
-                    Color(0.25f, 0.75f, 0.45f, 1f),
-                    Color(0.98f, 0.72f, 0.20f, 1f),
-                    Color(0.65f, 0.40f, 0.90f, 1f),
-                    Color(0.20f, 0.75f, 0.80f, 1f)
-                )
-
-                val faceMaterials = faceColors.map { color ->
-                    remember(materialLoader, color) {
-                        materialLoader.createColorInstance(
-                            color = color,
-                            metallic = 0f,
-                            roughness = 0.6f
-                        )
-                    }
+            modifier = Modifier.fillMaxSize(),
+            engine = engine,
+            modelLoader = modelLoader,
+            autoFitContent = false,
+            onGestureListener = rememberOnGestureListener(
+                onSingleTapConfirmed = { _, node ->
+                    selectedNode = node?.name
                 }
+            ),
+            mainLightNode = rememberMainLightNode(engine) {
+                intensity = 100_000f
+            },
+            cameraManipulator = rememberCameraManipulator(
+                orbitRadius = 3.5f + (resetToken * 0.001f),
+                targetPosition = Position()
+            )
+        ) {
+            val faceColors = listOf(
+                Color(0.20f, 0.55f, 0.95f, 1f),
+                Color(0.95f, 0.35f, 0.35f, 1f),
+                Color(0.25f, 0.75f, 0.45f, 1f),
+                Color(0.98f, 0.72f, 0.20f, 1f),
+                Color(0.65f, 0.40f, 0.90f, 1f),
+                Color(0.20f, 0.75f, 0.80f, 1f)
+            )
 
-                when (objectType) {
-                    Learning3DObjectType.GLB, Learning3DObjectType.MULTIPART_GLB -> {
-                        glbInstance?.let { instance ->
-                            ModelNode(
-                                modelInstance = instance,
-                                scaleToUnits = 1.0f,
-                                rotation = Rotation(y = rotationY),
-                                apply = {
-                                    // Let taps resolve to imported GLB child nodes.
-                                    isTouchable = false
-                                    name = null
-                                }
-                            )
-                        }
-                    }
-
-                    Learning3DObjectType.SPHERE -> SphereNode(
-                        radius = 0.65f,
-                        materialInstance = faceMaterials[0],
-                        rotation = Rotation(y = rotationY)
-                    )
-
-                    else -> CubeNode(
-                        size = Size(1.0f),
-                        materialInstance = faceMaterials[0],
-                        rotation = Rotation(y = rotationY),
-                        apply = {
-                            for (index in 1 until faceMaterials.size) {
-                                setMaterialInstanceAt(index, faceMaterials[index])
-                            }
-                        }
+            val faceMaterials = faceColors.map { color ->
+                remember(materialLoader, color) {
+                    materialLoader.createColorInstance(
+                        color = color,
+                        metallic = 0f,
+                        roughness = 0.6f
                     )
                 }
             }
 
-        Surface(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(12.dp),
-            shape = MaterialTheme.shapes.medium,
-            tonalElevation = 4.dp
-        ) {
-            Text(
-                text = title,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                style = MaterialTheme.typography.titleMedium
-            )
+            when (objectType) {
+                Learning3DObjectType.GLB, Learning3DObjectType.MULTIPART_GLB -> {
+                    glbInstance?.let { instance ->
+                        ModelNode(
+                            modelInstance = instance,
+                            scaleToUnits = 1.0f,
+                            rotation = Rotation(y = rotationY),
+                            apply = {
+                                isTouchable = false
+                                name = null
+                            }
+                        )
+                    }
+                }
+
+                Learning3DObjectType.SPHERE -> SphereNode(
+                    radius = 0.65f,
+                    materialInstance = faceMaterials[0],
+                    rotation = Rotation(y = rotationY)
+                )
+
+                else -> CubeNode(
+                    size = Size(1.0f),
+                    materialInstance = faceMaterials[0],
+                    rotation = Rotation(y = rotationY),
+                    apply = {
+                        for (index in 1 until faceMaterials.size) {
+                            setMaterialInstanceAt(index, faceMaterials[index])
+                        }
+                    }
+                )
+            }
         }
 
-        if (objectType == Learning3DObjectType.GLB || objectType == Learning3DObjectType.MULTIPART_GLB) {
+        if (!fullscreen) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(12.dp),
+                shape = MaterialTheme.shapes.medium,
+                tonalElevation = 4.dp
+            ) {
+                Text(
+                    text = title,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+
+        if (!fullscreen && (objectType == Learning3DObjectType.GLB || objectType == Learning3DObjectType.MULTIPART_GLB)) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -198,7 +233,7 @@ fun Learning3DViewer(
             }
         }
 
-        if (selectedNode != null) {
+        if (!fullscreen && selectedNode != null) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -238,7 +273,20 @@ fun Learning3DViewer(
                 Button(onClick = { autoRotate = !autoRotate }) {
                     Text(if (autoRotate) "Stop Rotate" else "Auto Rotate")
                 }
+
+                Button(onClick = { setFullscreen(!fullscreen) }) {
+                    Text(if (fullscreen) "Exit Fullscreen" else "Fullscreen")
+                }
             }
         }
     }
+}
+
+private fun Context.findActivity(): Activity? {
+    var current = this
+    while (current is ContextWrapper) {
+        if (current is Activity) return current
+        current = current.baseContext
+    }
+    return current as? Activity
 }
