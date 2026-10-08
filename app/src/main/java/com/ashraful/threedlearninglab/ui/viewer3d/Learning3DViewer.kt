@@ -133,11 +133,12 @@ fun Learning3DViewer(
                         glbInstance?.let { instance ->
                             ModelNode(
                                 modelInstance = instance,
-                                scaleToUnits = if (selectedNode == "Prototype Cube") 1.12f else 1.0f,
+                                scaleToUnits = 1.0f,
                                 rotation = Rotation(y = rotationY),
                                 apply = {
-                                    isTouchable = true
-                                    name = "Prototype Cube"
+                                    // Let taps resolve to imported GLB child nodes.
+                                    isTouchable = false
+                                    name = null
                                 }
                             )
                         }
