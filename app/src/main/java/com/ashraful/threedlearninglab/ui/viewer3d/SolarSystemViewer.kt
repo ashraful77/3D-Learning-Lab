@@ -126,7 +126,7 @@ fun SolarSystemViewer(
                     intensity = 100_000f
                 },
                 cameraManipulator = rememberCameraManipulator(
-                    orbitRadius = if (selectedTarget == "overview") 24f else 4.5f,
+                    orbitRadius = if (selectedTarget == "overview") 32f else 4.5f,
                     targetPosition = targetPosition
                 )
             ) {
@@ -234,7 +234,8 @@ fun SolarSystemViewer(
         Surface(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(12.dp),
+                .fillMaxWidth(0.96f)
+                .padding(top = 12.dp, start = 8.dp, end = 8.dp),
             shape = MaterialTheme.shapes.medium,
             tonalElevation = 6.dp
         ) {
@@ -353,8 +354,11 @@ private fun TargetButton(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    Button(onClick = onClick) {
-        Text(name)
+    Button(
+        onClick = onClick,
+        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp)
+    ) {
+        Text(name, maxLines = 1, fontSize = 14.sp)
     }
 }
 
