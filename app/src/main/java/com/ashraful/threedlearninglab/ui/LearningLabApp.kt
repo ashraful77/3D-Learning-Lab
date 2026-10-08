@@ -146,7 +146,7 @@ fun LearningLabApp() {
                     modifier = Modifier.weight(1f),
                     title = "3D Learning Lab • " + (selectedLibraryObject?.name ?: name),
                     objectType = selectedLibraryObject?.type ?: selectedObject,
-                    object = selectedLibraryObject
+                    libraryObject = selectedLibraryObject
                 )
             }
         }
