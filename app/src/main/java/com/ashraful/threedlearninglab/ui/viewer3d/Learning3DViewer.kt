@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -124,7 +125,7 @@ fun Learning3DViewer(
                     Learning3DObjectType.SPHERE -> SphereNode(
                         radius = 0.65f,
                         materialInstance = faceMaterials[0],
-                        rotation = Rotation(y = rotationY)
+                        rotation = Rotation(y = viewerState.rotationY)
                     )
 
                     else -> CubeNode(
