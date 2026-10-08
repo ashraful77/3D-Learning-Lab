@@ -36,6 +36,7 @@ import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberMainLightNode
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
+import io.github.sceneview.rememberOnGestureListener
 import kotlinx.coroutines.delay
 
 @Composable
@@ -66,9 +67,11 @@ fun Learning3DViewer(
     var rotationY by remember { mutableFloatStateOf(0f) }
     var resetToken by remember { mutableIntStateOf(0) }
     var loadTimedOut by remember { mutableStateOf(false) }
+    var selectedNode by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(objectType, glbInstance) {
         loadTimedOut = false
+        selectedNode = null
         if (objectType == Learning3DObjectType.GLB && glbInstance == null) {
             delay(5000L)
             loadTimedOut = true
@@ -84,66 +87,81 @@ fun Learning3DViewer(
 
     Box(modifier = modifier.fillMaxSize()) {
         SceneView(
-                modifier = Modifier.fillMaxSize(),
-                engine = engine,
-                modelLoader = modelLoader,
-                autoFitContent = false,
-                mainLightNode = rememberMainLightNode(engine) {
-                    intensity = 100_000f
-                },
-                cameraManipulator = rememberCameraManipulator(
-                    orbitRadius = 3.5f + (resetToken * 0.001f),
-                    targetPosition = Position()
-                )
-            ) {
-                val faceColors = listOf(
-                    Color(0.20f, 0.55f, 0.95f, 1f),
-                    Color(0.95f, 0.35f, 0.35f, 1f),
-                    Color(0.25f, 0.75f, 0.45f, 1f),
-                    Color(0.98f, 0.72f, 0.20f, 1f),
-                    Color(0.65f, 0.40f, 0.90f, 1f),
-                    Color(0.20f, 0.75f, 0.80f, 1f)
-                )
+            modifier = Modifier.fillMaxSize(),
+            engine = engine,
+            modelLoader = modelLoader,
+            autoFitContent = false,
+            mainLightNode = rememberMainLightNode(engine) {
+                intensity = 100_000f
+            },
+            cameraManipulator = rememberCameraManipulator(
+                orbitRadius = 3.5f + (resetToken * 0.001f),
+                targetPosition = Position()
+            ),
+            onGestureListener = rememberOnGestureListener(
+                onSingleTapConfirmed = { _, node ->
+                    selectedNode = node?.name
+                }
+            )
+        ) {
+            val faceColors = listOf(
+                Color(0.20f, 0.55f, 0.95f, 1f),
+                Color(0.95f, 0.35f, 0.35f, 1f),
+                Color(0.25f, 0.75f, 0.45f, 1f),
+                Color(0.98f, 0.72f, 0.20f, 1f),
+                Color(0.65f, 0.40f, 0.90f, 1f),
+                Color(0.20f, 0.75f, 0.80f, 1f)
+            )
 
-                val faceMaterials = faceColors.map { color ->
-                    remember(materialLoader, color) {
-                        materialLoader.createColorInstance(
-                            color = color,
-                            metallic = 0f,
-                            roughness = 0.6f
+            val faceMaterials = faceColors.map { color ->
+                remember(materialLoader, color) {
+                    materialLoader.createColorInstance(
+                        color = color,
+                        metallic = 0f,
+                        roughness = 0.6f
+                    )
+                }
+            }
+
+            when (objectType) {
+                Learning3DObjectType.GLB -> {
+                    glbInstance?.let { instance ->
+                        ModelNode(
+                            modelInstance = instance,
+                            scaleToUnits = 1.0f,
+                            rotation = Rotation(y = rotationY),
+                            isTouchable = true,
+                            apply = {
+                                name = "Prototype Cube"
+                            }
                         )
                     }
                 }
 
-                when (objectType) {
-                    Learning3DObjectType.GLB -> {
-                        glbInstance?.let { instance ->
-                            ModelNode(
-                                modelInstance = instance,
-                                scaleToUnits = 1.0f,
-                                rotation = Rotation(y = rotationY)
-                            )
+                Learning3DObjectType.SPHERE -> SphereNode(
+                    radius = 0.65f,
+                    materialInstance = faceMaterials[0],
+                    rotation = Rotation(y = rotationY),
+                    isTouchable = true,
+                    apply = {
+                        name = "Sphere"
+                    }
+                )
+
+                else -> CubeNode(
+                    size = Size(1.0f),
+                    materialInstance = faceMaterials[0],
+                    rotation = Rotation(y = rotationY),
+                    isTouchable = true,
+                    apply = {
+                        name = "Cube"
+                        for (index in 1 until faceMaterials.size) {
+                            setMaterialInstanceAt(index, faceMaterials[index])
                         }
                     }
-
-                    Learning3DObjectType.SPHERE -> SphereNode(
-                        radius = 0.65f,
-                        materialInstance = faceMaterials[0],
-                        rotation = Rotation(y = rotationY)
-                    )
-
-                    else -> CubeNode(
-                        size = Size(1.0f),
-                        materialInstance = faceMaterials[0],
-                        rotation = Rotation(y = rotationY),
-                        apply = {
-                            for (index in 1 until faceMaterials.size) {
-                                setMaterialInstanceAt(index, faceMaterials[index])
-                            }
-                        }
-                    )
-                }
+                )
             }
+        }
 
         Surface(
             modifier = Modifier
@@ -180,6 +198,22 @@ fun Learning3DViewer(
             }
         }
 
+        if (selectedNode != null) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(top = 110.dp),
+                shape = MaterialTheme.shapes.medium,
+                tonalElevation = 8.dp
+            ) {
+                Text(
+                    text = "Selected: $selectedNode",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -196,6 +230,7 @@ fun Learning3DViewer(
                 Button(onClick = {
                     autoRotate = false
                     rotationY = 0f
+                    selectedNode = null
                     resetToken++
                 }) {
                     Text("Reset View")
