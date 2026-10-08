@@ -53,7 +53,7 @@ import kotlinx.coroutines.delay
 fun Learning3DViewer(
     title: String = "3D Learning Lab • Cube",
     objectType: Learning3DObjectType = Learning3DObjectType.CUBE,
-    object: Learning3DObject? = null,
+    libraryObject: Learning3DObject? = null,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -61,7 +61,7 @@ fun Learning3DViewer(
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
 
-    val resolvedObjectType = object?.type ?: objectType
+    val resolvedObjectType = libraryObject?.type ?: objectType
 
     val modelAsset = when (resolvedObjectType) {
         Learning3DObjectType.MULTIPART_GLB -> "models/multipart-prototype.glb"
