@@ -34,6 +34,7 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Size
 import io.github.sceneview.node.CapsuleNode
+import io.github.sceneview.node.Node
 import io.github.sceneview.node.ConeNode
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.CylinderNode
@@ -285,12 +286,13 @@ private fun TorusKnotPreview(
 ) {
     // Temporary native preview. The exact custom torus-knot mesh is a separate
     // implementation milestone so this migration does not introduce a second renderer.
-    TorusNode(
-        majorRadius = 1.05f,
-        minorRadius = 0.30f,
-        majorSegments = 48,
-        minorSegments = 20,
-        rotation = Rotation(x = 55f, y = rotationY),
-        materialInstance = material
-    )
+    Node(rotation = Rotation(x = 55f, y = rotationY)) {
+        TorusNode(
+            majorRadius = 1.05f,
+            minorRadius = 0.30f,
+            majorSegments = 48,
+            minorSegments = 20,
+            materialInstance = material
+        )
+    }
 }
