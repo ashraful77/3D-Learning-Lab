@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -84,7 +85,9 @@ fun SolarSystemViewer(
     var selectedTarget by remember { mutableStateOf("overview") }
     
     val angles = remember {
-        MutableList(planets.size) { index -> index * 0.72f }
+        mutableStateListOf<Float>().apply {
+            addAll(planets.mapIndexed { index, _ -> index * 0.72f })
+        }
     }
 
     LaunchedEffect(orbitRunning, speed) {
