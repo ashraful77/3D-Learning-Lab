@@ -34,7 +34,6 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Size
 import io.github.sceneview.node.CapsuleNode
-import io.github.sceneview.node.Node
 import io.github.sceneview.node.ConeNode
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.CylinderNode
@@ -94,6 +93,7 @@ fun GeometryStudioViewer(
             roughness = 0.38f
         )
     }
+
     Box(modifier = modifier.fillMaxSize()) {
         SceneView(
             modifier = Modifier.fillMaxSize(),
@@ -165,9 +165,6 @@ fun GeometryStudioViewer(
                     rotation = Rotation(x = 55f, y = rotationY),
                     materialInstance = material
                 )
-            }
-            if (wireframe) {
-                GeometryWireframe(shape, rotationY, wireframeMaterial)
             }
         }
 
