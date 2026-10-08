@@ -78,6 +78,7 @@ fun GeometryStudioViewer(
     var rotationY by remember { mutableFloatStateOf(0f) }
     var resetToken by remember { mutableIntStateOf(0) }
     var colorIndex by remember { mutableIntStateOf(0) }
+    var showDimensions by remember { mutableStateOf(true) }
 
     LaunchedEffect(autoRotate) {
         while (autoRotate) {
@@ -193,6 +194,30 @@ fun GeometryStudioViewer(
             }
         }
 
+        if (showDimensions) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 76.dp, end = 12.dp),
+                shape = MaterialTheme.shapes.small,
+                tonalElevation = 4.dp
+            ) {
+                Column(modifier = Modifier.padding(10.dp)) {
+                    Text(
+                        "DIMENSIONS",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    dimensionLines(shape).forEach { line ->
+                        Text(
+                            line,
+                            modifier = Modifier.padding(top = 3.dp),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+        }
+
         Surface(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -251,6 +276,11 @@ fun GeometryStudioViewer(
                     ) {
                         Text("Reset View", maxLines = 1, fontSize = 12.sp)
                     }
+                    FilterChip(
+                        selected = showDimensions,
+                        onClick = { showDimensions = !showDimensions },
+                        label = { Text("Dimensions", fontSize = 11.sp) }
+                    )
                 }
 
                 Row(
@@ -280,3 +310,14 @@ fun GeometryStudioViewer(
         }
     }
 }
+private fun dimensionLines(shape: GeometryShape): List<String> = when (shape) {
+    GeometryShape.CUBE -> listOf("Length: 2.0", "Width: 2.0", "Height: 2.0")
+    GeometryShape.SPHERE -> listOf("Radius: 1.4", "Diameter: 2.8")
+    GeometryShape.CYLINDER -> listOf("Radius: 1.0", "Height: 2.4")
+    GeometryShape.CONE -> listOf("Base radius: 1.3", "Height: 2.6")
+    GeometryShape.PYRAMID -> listOf("Base radius: 1.6", "Height: 2.4", "Sides: 4")
+    GeometryShape.TORUS -> listOf("Major radius: 1.2", "Tube radius: 0.45")
+    GeometryShape.TORUS_KNOT -> listOf("Major radius: 1.05", "Tube radius: 0.30", "Type: (2,3)")
+    GeometryShape.CAPSULE -> listOf("Radius: 0.8", "Cylinder height: 1.4")
+}
+\n
