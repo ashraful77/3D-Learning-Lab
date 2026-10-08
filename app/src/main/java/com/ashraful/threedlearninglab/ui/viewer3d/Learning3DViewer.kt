@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -45,8 +46,17 @@ fun Learning3DViewer(
     objectType: Learning3DObjectType = Learning3DObjectType.CUBE,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
+
+    val glbAssetExists = remember(context, objectType) {
+        if (objectType != Learning3DObjectType.GLB) true
+        else runCatching {
+            context.assets.open("models/prototype-cube.glb").use { }
+            true
+        }.getOrDefault(false)
+    }
 
     val glbInstance = if (objectType == Learning3DObjectType.GLB) {
         rememberModelInstance(modelLoader, "models/prototype-cube.glb")
@@ -166,8 +176,9 @@ fun Learning3DViewer(
             ) {
                 Text(
                     text = when {
+                        !glbAssetExists -> "GLB asset missing from APK"
                         glbInstance != null -> "GLB loaded"
-                        loadTimedOut -> "GLB did not load"
+                        loadTimedOut -> "GLB asset found, but model failed to load"
                         else -> "Loading GLB…"
                     },
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
