@@ -113,7 +113,7 @@ fun SolarSystemViewer(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        keyScene(selectedTarget, resetToken / 3) {
+        androidx.compose.runtime.key(selectedTarget, resetToken) {
             SceneView(
                 modifier = Modifier.fillMaxSize(),
                 engine = engine,
@@ -335,13 +335,3 @@ private fun TargetButton(
     }
 }
 
-@Composable
-private fun keyScene(
-    target: String,
-    frameBucket: Int,
-    content: @Composable () -> Unit
-) {
-    androidx.compose.runtime.key(target, frameBucket) {
-        content()
-    }
-}
