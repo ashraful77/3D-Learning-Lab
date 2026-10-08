@@ -79,6 +79,7 @@ fun GeometryStudioViewer(
     var resetToken by remember { mutableIntStateOf(0) }
     var colorIndex by remember { mutableIntStateOf(0) }
     var showDimensions by remember { mutableStateOf(true) }
+    var showEducation by remember { mutableStateOf(true) }
 
     LaunchedEffect(autoRotate) {
         while (autoRotate) {
@@ -235,6 +236,24 @@ fun GeometryStudioViewer(
                     modifier = Modifier.padding(top = 3.dp),
                     style = MaterialTheme.typography.bodySmall
                 )
+                if (showEducation) {
+                    val lesson = geometryLesson(shape)
+                    Text(
+                        lesson.definition,
+                        modifier = Modifier.padding(top = 6.dp),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        "Formula: " + lesson.formula,
+                        modifier = Modifier.padding(top = 3.dp),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        "Use: " + lesson.application,
+                        modifier = Modifier.padding(top = 3.dp),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
 
@@ -281,6 +300,11 @@ fun GeometryStudioViewer(
                         onClick = { showDimensions = !showDimensions },
                         label = { Text("Dimensions", fontSize = 11.sp) }
                     )
+                    FilterChip(
+                        selected = showEducation,
+                        onClick = { showEducation = !showEducation },
+                        label = { Text("Info", fontSize = 11.sp) }
+                    )
                 }
 
                 Row(
@@ -320,3 +344,52 @@ private fun dimensionLines(shape: GeometryShape): List<String> = when (shape) {
     GeometryShape.TORUS_KNOT -> listOf("Major radius: 1.05", "Tube radius: 0.30", "Type: (2,3)")
     GeometryShape.CAPSULE -> listOf("Radius: 0.8", "Cylinder height: 1.4")
 }
+private data class GeometryLesson(
+    val definition: String,
+    val formula: String,
+    val application: String
+)
+
+private fun geometryLesson(shape: GeometryShape): GeometryLesson = when (shape) {
+    GeometryShape.CUBE -> GeometryLesson(
+        "A solid with six equal square faces.",
+        "Volume = a³",
+        "boxes and dice"
+    )
+    GeometryShape.SPHERE -> GeometryLesson(
+        "A perfectly round solid; every surface point is equally distant from its centre.",
+        "Volume = 4/3 πr³",
+        "balls and spherical tanks"
+    )
+    GeometryShape.CYLINDER -> GeometryLesson(
+        "A solid with two parallel circular bases joined by a curved surface.",
+        "Volume = πr²h",
+        "cans and pipes"
+    )
+    GeometryShape.CONE -> GeometryLesson(
+        "A solid with a circular base that tapers to one vertex.",
+        "Volume = 1/3 πr²h",
+        "funnels and traffic cones"
+    )
+    GeometryShape.PYRAMID -> GeometryLesson(
+        "A solid with a polygonal base and triangular faces meeting at one vertex.",
+        "Volume = 1/3 × base area × height",
+        "roofs and monuments"
+    )
+    GeometryShape.TORUS -> GeometryLesson(
+        "A ring-shaped solid formed around a circular hole.",
+        "Surface area depends on major and minor radii",
+        "rings and doughnuts"
+    )
+    GeometryShape.TORUS_KNOT -> GeometryLesson(
+        "A mathematical knot formed by a closed curve around a torus.",
+        "Defined by torus-knot parameters",
+        "mathematical modelling"
+    )
+    GeometryShape.CAPSULE -> GeometryLesson(
+        "A cylinder joined to rounded hemispherical ends.",
+        "Volume = cylinder + two hemispheres",
+        "medicine capsules and rounded machine parts"
+    )
+}
+
