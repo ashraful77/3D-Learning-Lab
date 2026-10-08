@@ -6,7 +6,8 @@ enum class Learning3DObjectType {
     CYLINDER,
     CONE,
     HEART,
-    GLB
+    GLB,
+    MULTIPART_GLB
 }
 
 data class Learning3DPart(
