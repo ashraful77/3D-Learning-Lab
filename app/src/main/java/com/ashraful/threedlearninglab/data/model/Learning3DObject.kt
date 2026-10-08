@@ -9,6 +9,15 @@ enum class Learning3DObjectType {
     GLB
 }
 
+data class Learning3DPart(
+    val id: String,
+    val name: String,
+    val modelNode: String? = null,
+    val description: String = "",
+    val label: String? = null,
+    val selectable: Boolean = true
+)
+
 data class Learning3DObject(
     val id: String,
     val name: String,
@@ -17,5 +26,6 @@ data class Learning3DObject(
     val type: Learning3DObjectType,
     val description: String = "",
     val modelFile: String? = null,
-    val capabilities: Set<String> = emptySet()
+    val capabilities: Set<String> = emptySet(),
+    val parts: List<Learning3DPart> = emptyList()
 )
