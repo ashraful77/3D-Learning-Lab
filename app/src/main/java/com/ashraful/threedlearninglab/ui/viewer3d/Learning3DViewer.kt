@@ -32,7 +32,11 @@ import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.node.SphereNode
 import io.github.sceneview.rememberCameraManipulator
+import io.github.sceneview.rememberCameraNode
+import io.github.sceneview.rememberEngine
+import io.github.sceneview.rememberMainLightNode
 import io.github.sceneview.rememberModelInstance
+import io.github.sceneview.rememberModelLoader
 import kotlinx.coroutines.delay
 
 @Composable
@@ -41,9 +45,27 @@ fun Learning3DViewer(
     objectType: Learning3DObjectType = Learning3DObjectType.CUBE,
     modifier: Modifier = Modifier,
 ) {
+    val engine = rememberEngine()
+    val modelLoader = rememberModelLoader(engine)
+
+    val glbInstance = if (objectType == Learning3DObjectType.GLB) {
+        rememberModelInstance(modelLoader, "models/prototype-cube.glb")
+    } else {
+        null
+    }
+
     var autoRotate by remember { mutableStateOf(false) }
     var rotationY by remember { mutableFloatStateOf(0f) }
     var resetToken by remember { mutableIntStateOf(0) }
+    var loadTimedOut by remember { mutableStateOf(false) }
+
+    LaunchedEffect(objectType, glbInstance) {
+        loadTimedOut = false
+        if (objectType == Learning3DObjectType.GLB && glbInstance == null) {
+            delay(5000L)
+            loadTimedOut = true
+        }
+    }
 
     LaunchedEffect(autoRotate) {
         while (autoRotate) {
@@ -56,9 +78,17 @@ fun Learning3DViewer(
         key(resetToken) {
             SceneView(
                 modifier = Modifier.fillMaxSize(),
+                engine = engine,
+                modelLoader = modelLoader,
                 autoFitContent = false,
+                cameraNode = rememberCameraNode(engine) {
+                    position = Position(z = 3.5f)
+                },
+                mainLightNode = rememberMainLightNode(engine) {
+                    intensity = 100_000f
+                },
                 cameraManipulator = rememberCameraManipulator(
-                    orbitHomePosition = Position(z = 4.0f),
+                    orbitHomePosition = Position(z = 3.5f),
                     targetPosition = Position()
                 )
             ) {
@@ -83,10 +113,7 @@ fun Learning3DViewer(
 
                 when (objectType) {
                     Learning3DObjectType.GLB -> {
-                        rememberModelInstance(
-                            modelLoader,
-                            "models/prototype-cube.glb"
-                        )?.let { instance ->
+                        glbInstance?.let { instance ->
                             ModelNode(
                                 modelInstance = instance,
                                 scaleToUnits = 1.0f,
@@ -127,6 +154,26 @@ fun Learning3DViewer(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                 style = MaterialTheme.typography.titleMedium
             )
+        }
+
+        if (objectType == Learning3DObjectType.GLB) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(16.dp),
+                shape = MaterialTheme.shapes.medium,
+                tonalElevation = 6.dp
+            ) {
+                Text(
+                    text = when {
+                        glbInstance != null -> "GLB loaded"
+                        loadTimedOut -> "GLB did not load"
+                        else -> "Loading GLB…"
+                    },
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
 
         Surface(
