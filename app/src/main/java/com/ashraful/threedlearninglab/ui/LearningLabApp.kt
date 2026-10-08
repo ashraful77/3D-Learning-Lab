@@ -111,6 +111,7 @@ fun LearningLabApp() {
         LabScreen.EXPERIMENT_LIST -> ExperimentMenu(
             onBack = { screen = LabScreen.HOME },
             onExperimentSelected = {
+                selectedLibraryObject = null
                 selectedObject = it
                 screen = LabScreen.VIEWER
             }
