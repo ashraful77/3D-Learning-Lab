@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +32,6 @@ import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.node.SphereNode
 import io.github.sceneview.rememberCameraManipulator
-import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberMainLightNode
 import io.github.sceneview.rememberModelInstance
@@ -85,20 +83,16 @@ fun Learning3DViewer(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        key(resetToken) {
-            SceneView(
+        SceneView(
                 modifier = Modifier.fillMaxSize(),
                 engine = engine,
                 modelLoader = modelLoader,
                 autoFitContent = false,
-                cameraNode = rememberCameraNode(engine) {
-                    position = Position(z = 3.5f)
-                },
                 mainLightNode = rememberMainLightNode(engine) {
                     intensity = 100_000f
                 },
                 cameraManipulator = rememberCameraManipulator(
-                    orbitHomePosition = Position(z = 3.5f),
+                    orbitRadius = 3.5f + (resetToken * 0.001f),
                     targetPosition = Position()
                 )
             ) {
@@ -150,7 +144,6 @@ fun Learning3DViewer(
                     )
                 }
             }
-        }
 
         Surface(
             modifier = Modifier
@@ -200,7 +193,11 @@ fun Learning3DViewer(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = { resetToken++ }) {
+                Button(onClick = {
+                    autoRotate = false
+                    rotationY = 0f
+                    resetToken++
+                }) {
                     Text("Reset View")
                 }
 
