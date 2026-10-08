@@ -105,7 +105,7 @@ Do not declare the complete 3D technology gate finished until these are validate
 - [x] Recreate procedural geometry library (native primitives)
 - [x] Preserve shape switching
 - [x] Preserve auto rotation
-- [x] Preserve wireframe mode
+- [ ] Preserve wireframe mode
 - [x] Preserve colour control (preset colours)
 - [x] Preserve reset view
 - [x] Preserve geometry information
