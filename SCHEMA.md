@@ -1,6 +1,14 @@
 # 3D Learning Lab — Content Schema
 
-## Content Hierarchy
+## Top-Level Content Collections
+The application has two content collections:
+
+- **Library** — production educational content.
+- **Experiments** — technical/prototype content.
+
+An experiment is not automatically a library object.
+
+## Content Hierarchy — Library
 Subject → Category → 3D Object → Model + Parts + Labels + Capabilities + Animations + Educational Information
 
 ## Subject
@@ -13,7 +21,7 @@ Fields:
 - categories
 
 IDs:
-physics, chemistry, biology, mathematics, others
+physics, chemistry, biology, mathematics, astronomy, others
 
 ## Category
 Fields:
@@ -39,11 +47,37 @@ Fields:
 - capabilities
 - animations
 - educationalInfo
+- source
+- contentVersion
 
-Stable IDs include cube, sphere, cylinder, cone, heart and atom.
+Stable IDs include cube, sphere, cylinder, cone, heart and solar_system.
 
-## Domain Model Implementation
-The Android domain layer represents each educational 3D object with a stable ID, subject/category IDs, object type, optional model file, description and capabilities. Rendering remains separate from this data model.
+## Experiment
+Fields:
+- id
+- name
+- description
+- experimentType
+- source
+- capabilities
+- status
+- testTarget
+- relatedObjectId (optional)
+
+Possible experiment types:
+- glb_loading
+- selection
+- hierarchy
+- animation
+- rendering
+- interaction
+- prototype
+
+Possible status values:
+- active
+- validated
+- promoted
+- archived
 
 ## Model Metadata
 Fields:
@@ -55,6 +89,21 @@ Fields:
 - source
 
 Example: models/cylinder.glb, format glb, source BUILT_IN.
+
+## Experience Metadata
+Some library content may be procedural rather than GLB-based.
+
+Fields may include:
+- experienceType
+- renderer
+- controller
+- assetSource
+- offlineRequired
+
+Examples:
+- geometry_procedural
+- solar_system_procedural
+- glb_model
 
 ## Parts
 Fields:
@@ -77,7 +126,7 @@ Fields:
 
 ## Capabilities
 Possible values:
-rotate, zoom, pan, labels, selection, dimensions, net, animation, cutaway
+rotate, zoom, pan, labels, selection, dimensions, net, animation, cutaway, focus, orbit_control, speed_control, wireframe, color_control
 
 ## Animations
 Fields:
@@ -114,13 +163,26 @@ Optional fields:
 Suitable geometry objects may contain a net model, dimensions, animation and explanation.
 
 ## Content Source
-Built-in or Downloaded. Future sources may include Updated and Custom.
+Production library:
+- BUILT_IN
+- DOWNLOADED
+- UPDATED
+- CUSTOM
+
+Experiments:
+- PROTOTYPE
+- TEST_ASSET
+- SOURCE_HTML
+- INTERNAL
 
 ## Versioning
-Every object should have a content version to support future updates.
+Every production object should have a content version to support future updates.
 
 ## Future Educational Metadata
 educationLevel, ageRange, classLevel, difficulty, curriculum and board.
 
 ## Repository Principle
-The UI retrieves objects through a repository interface and does not care whether an object is built in, downloaded or updated.
+The UI retrieves production objects and experiments through repository interfaces. Rendering code must not decide whether content is production or experimental.
+
+## Migration Rule
+HTML source experiences can be registered as migration references during development, but the final offline library entry should not depend on a remote CDN unless the architecture explicitly supports bundled local dependencies.
