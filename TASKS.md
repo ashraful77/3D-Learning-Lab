@@ -102,18 +102,18 @@ Do not declare the complete 3D technology gate finished until these are validate
 ## Phase 5 — Supplied 3D Experience Migration
 ### Geometry Studio
 - [ ] Analyze supplied 3d Text.html
-- [ ] Recreate procedural geometry library
-- [ ] Preserve shape switching
-- [ ] Preserve auto rotation
+- [x] Recreate procedural geometry library (native primitives)
+- [x] Preserve shape switching
+- [x] Preserve auto rotation
 - [ ] Preserve wireframe mode
-- [ ] Preserve colour control
-- [ ] Preserve reset view
-- [ ] Preserve geometry information
-- [ ] Integrate under Mathematics → Geometry
+- [x] Preserve colour control (preset colours)
+- [x] Preserve reset view
+- [x] Preserve geometry information
+- [x] Integrate under Mathematics → Geometry
 
 ### Solar System
 - [ ] Analyze supplied Solar System.html
-- [ ] Recreate Sun and planetary system
+- [x] Recreate Sun and planetary system
 - [ ] Preserve orbit animation
 - [ ] Preserve planet selection
 - [ ] Preserve camera focus/tracking

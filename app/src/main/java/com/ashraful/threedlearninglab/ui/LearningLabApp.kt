@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ashraful.threedlearninglab.data.model.Learning3DObjectType
 import com.ashraful.threedlearninglab.ui.viewer3d.Learning3DViewer
+import com.ashraful.threedlearninglab.ui.viewer3d.GeometryStudioViewer
 import com.ashraful.threedlearninglab.ui.viewer3d.SolarSystemViewer
 
 private enum class LabArea {
@@ -36,6 +37,7 @@ private enum class LabScreen {
     MATHEMATICS_OBJECTS,
     EXPERIMENT_LIST,
     SOLAR_SYSTEM,
+    GEOMETRY_STUDIO,
     VIEWER
 }
 
@@ -75,13 +77,13 @@ fun LearningLabApp() {
             }
         )
 
-        LabScreen.MATHEMATICS_OBJECTS -> ObjectMenu(
-            subject = selectedSubject,
+        LabScreen.MATHEMATICS_OBJECTS -> GeometryCategoryMenu(
             onBack = { screen = LabScreen.LIBRARY_SUBJECTS },
-            onObjectSelected = {
-                selectedObject = it
-                screen = LabScreen.VIEWER
-            }
+            onGeometry = { screen = LabScreen.GEOMETRY_STUDIO }
+        )
+
+        LabScreen.GEOMETRY_STUDIO -> GeometryStudioViewer(
+            onBack = { screen = LabScreen.MATHEMATICS_OBJECTS }
         )
 
         LabScreen.EXPERIMENT_LIST -> ExperimentMenu(
@@ -244,6 +246,52 @@ private fun SubjectCard(
             contentPadding = PaddingValues(vertical = 24.dp)
         ) {
             Text(name)
+        }
+    }
+}
+
+
+@Composable
+private fun GeometryCategoryMenu(
+    onBack: () -> Unit,
+    onGeometry: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
+        Button(onClick = onBack) {
+            Text("← Subjects")
+        }
+
+        Text(
+            "Mathematics",
+            modifier = Modifier.padding(top = 20.dp),
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Text(
+            "Choose a category",
+            modifier = Modifier.padding(top = 6.dp, bottom = 20.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Geometry", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    "Interactive 3D Geometry Studio",
+                    modifier = Modifier.padding(top = 6.dp, bottom = 14.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Button(
+                    onClick = onGeometry,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Open Geometry Studio")
+                }
+            }
         }
     }
 }
