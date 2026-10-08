@@ -39,7 +39,6 @@ import io.github.sceneview.node.ConeNode
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.SphereNode
-import io.github.sceneview.node.TorusNode
 import io.github.sceneview.rememberCameraManipulator
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberMainLightNode
@@ -159,9 +158,13 @@ fun GeometryStudioViewer(
                     rotation = Rotation(y = rotationY),
                     materialInstance = material
                 )
-                GeometryShape.TORUS_KNOT -> TorusKnotPreview(
-                    rotationY = rotationY,
-                    material = material
+                GeometryShape.TORUS_KNOT -> TorusNode(
+                    majorRadius = 1.05f,
+                    minorRadius = 0.30f,
+                    majorSegments = 48,
+                    minorSegments = 20,
+                    rotation = Rotation(x = 55f, y = rotationY),
+                    materialInstance = material
                 )
             }
         }
@@ -279,20 +282,3 @@ fun GeometryStudioViewer(
     }
 }
 
-@Composable
-private fun TorusKnotPreview(
-    rotationY: Float,
-    material: com.google.android.filament.MaterialInstance
-) {
-    // Temporary native preview. The exact custom torus-knot mesh is a separate
-    // implementation milestone so this migration does not introduce a second renderer.
-    Node(rotation = Rotation(x = 55f, y = rotationY)) {
-        TorusNode(
-            majorRadius = 1.05f,
-            minorRadius = 0.30f,
-            majorSegments = 48,
-            minorSegments = 20,
-            materialInstance = material
-        )
-    }
-}
