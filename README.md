@@ -19,3 +19,5 @@ See `CONCEPT.md`, `PRD.md`, `ARCHITECTURE.md`, `SCHEMA.md`, and `TASKS.md` for t
 ## Current status
 
 The Android Compose foundation is in place. GitHub Actions builds a debug APK so development can continue without Android Studio.
+
+The prototype GLB model is bundled under `app/src/main/assets/models/` for the Phase 1 viewer milestone.
