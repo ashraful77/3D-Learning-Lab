@@ -10,6 +10,20 @@ enum class Learning3DObjectType {
     MULTIPART_GLB
 }
 
+enum class Learning3DCapability {
+    ROTATE,
+    ZOOM,
+    PAN,
+    RESET,
+    AUTO_ROTATE,
+    SELECTION,
+    LABELS,
+    DIMENSIONS,
+    ANIMATION,
+    CUTAWAY,
+    NET_UNFOLD
+}
+
 data class Learning3DPart(
     val id: String,
     val name: String,
@@ -17,6 +31,21 @@ data class Learning3DPart(
     val description: String = "",
     val label: String? = null,
     val selectable: Boolean = true
+)
+
+data class Learning3DEducationalInfo(
+    val definition: String = "",
+    val keyPoints: List<String> = emptyList(),
+    val teacherTips: List<String> = emptyList(),
+    val discussionQuestions: List<String> = emptyList(),
+    val formulas: List<String> = emptyList(),
+    val realWorldApplications: List<String> = emptyList()
+)
+
+data class Learning3DModelMetadata(
+    val classLevels: List<String> = emptyList(),
+    val tags: List<String> = emptyList(),
+    val educationalInfo: Learning3DEducationalInfo = Learning3DEducationalInfo()
 )
 
 data class Learning3DObject(
@@ -27,6 +56,7 @@ data class Learning3DObject(
     val type: Learning3DObjectType,
     val description: String = "",
     val modelFile: String? = null,
-    val capabilities: Set<String> = emptySet(),
-    val parts: List<Learning3DPart> = emptyList()
+    val capabilities: Set<Learning3DCapability> = emptySet(),
+    val parts: List<Learning3DPart> = emptyList(),
+    val metadata: Learning3DModelMetadata = Learning3DModelMetadata()
 )
