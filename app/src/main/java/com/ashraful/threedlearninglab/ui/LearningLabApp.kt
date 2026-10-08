@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ashraful.threedlearninglab.data.model.Learning3DCapability
 import com.ashraful.threedlearninglab.data.model.Learning3DObjectType
 import com.ashraful.threedlearninglab.data.model.Learning3DObject
 import com.ashraful.threedlearninglab.data.repository.Learning3DRepository
@@ -37,6 +39,7 @@ private enum class LabScreen {
     HOME,
     LIBRARY_SUBJECTS,
     MATHEMATICS_OBJECTS,
+    OBJECT_DETAILS,
     EXPERIMENT_LIST,
     SOLAR_SYSTEM,
     GEOMETRY_STUDIO,
@@ -54,6 +57,7 @@ fun LearningLabApp() {
     var selectedArea by remember { mutableStateOf(LabArea.LIBRARY) }
     var selectedSubject by remember { mutableStateOf(LibrarySubject.MATHEMATICS) }
     var selectedObject by remember { mutableStateOf(Learning3DObjectType.CUBE) }
+    var selectedLibraryObject by remember { mutableStateOf<Learning3DObject?>(null) }
 
     when (screen) {
         LabScreen.HOME -> HomeMenu(
@@ -84,14 +88,25 @@ fun LearningLabApp() {
             onBack = { screen = LabScreen.LIBRARY_SUBJECTS },
             onGeometryStudio = { screen = LabScreen.GEOMETRY_STUDIO },
             onObjectSelected = {
+                selectedLibraryObject = it
                 selectedObject = it.type
-                screen = LabScreen.VIEWER
+                screen = LabScreen.OBJECT_DETAILS
             }
         )
 
         LabScreen.GEOMETRY_STUDIO -> GeometryStudioViewer(
             onBack = { screen = LabScreen.MATHEMATICS_OBJECTS }
         )
+
+        LabScreen.OBJECT_DETAILS -> {
+            selectedLibraryObject?.let { objectItem ->
+                ObjectDetails(
+                    objectItem = objectItem,
+                    onBack = { screen = LabScreen.MATHEMATICS_OBJECTS },
+                    onOpenViewer = { screen = LabScreen.VIEWER }
+                )
+            }
+        }
 
         LabScreen.EXPERIMENT_LIST -> ExperimentMenu(
             onBack = { screen = LabScreen.HOME },
@@ -128,8 +143,9 @@ fun LearningLabApp() {
 
                 Learning3DViewer(
                     modifier = Modifier.weight(1f),
-                    title = "3D Learning Lab • $name",
-                    objectType = selectedObject
+                    title = "3D Learning Lab • " + (selectedLibraryObject?.name ?: name),
+                    objectType = selectedLibraryObject?.type ?: selectedObject,
+                    object = selectedLibraryObject
                 )
             }
         }
@@ -321,6 +337,117 @@ private fun ObjectMenu(
         }
     }
 }
+
+@Composable
+private fun ObjectDetails(
+    objectItem: Learning3DObject,
+    onBack: () -> Unit,
+    onOpenViewer: () -> Unit
+) {
+    val info = objectItem.metadata.educationalInfo
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        Button(onClick = onBack, modifier = Modifier.padding(top = 12.dp)) {
+            Text("← 3D Objects")
+        }
+
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Text(objectItem.name, style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    objectItem.description,
+                    modifier = Modifier.padding(top = 4.dp),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            item { InfoCard("Class Levels", objectItem.metadata.classLevels.joinToString(" • ")) }
+            item { InfoCard("Definition", info.definition) }
+            if (info.keyPoints.isNotEmpty()) item { BulletCard("Key Points", info.keyPoints) }
+            if (objectItem.parts.isNotEmpty()) {
+                item {
+                    BulletCard("Parts", objectItem.parts.map { "${it.name}: ${it.description}" })
+                }
+            }
+            if (info.formulas.isNotEmpty()) item { BulletCard("Formulas", info.formulas) }
+            if (info.teacherTips.isNotEmpty()) item { BulletCard("Teacher Tips", info.teacherTips) }
+            if (info.discussionQuestions.isNotEmpty()) {
+                item { BulletCard("Discussion Questions", info.discussionQuestions) }
+            }
+            if (info.realWorldApplications.isNotEmpty()) {
+                item { BulletCard("Real-World Applications", info.realWorldApplications) }
+            }
+            item {
+                InfoCard(
+                    "Capabilities",
+                    objectItem.capabilities.sortedBy { it.name }.joinToString(" • ") { capabilityLabel(it) }
+                )
+            }
+            item { InfoCard("Tags", objectItem.metadata.tags.joinToString(" • ")) }
+        }
+
+        Button(
+            onClick = onOpenViewer,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp)
+        ) {
+            Text("Open 3D Viewer")
+        }
+    }
+}
+
+@Composable
+private fun InfoCard(title: String, text: String) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                text.ifBlank { "Not available yet." },
+                modifier = Modifier.padding(top = 4.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+private fun BulletCard(title: String, items: List<String>) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            items.forEach { item ->
+                Text(
+                    "• $item",
+                    modifier = Modifier.padding(top = 5.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
+private fun capabilityLabel(capability: Learning3DCapability): String =
+    when (capability) {
+        Learning3DCapability.ROTATE -> "Rotate"
+        Learning3DCapability.ZOOM -> "Zoom"
+        Learning3DCapability.PAN -> "Pan"
+        Learning3DCapability.RESET -> "Reset"
+        Learning3DCapability.AUTO_ROTATE -> "Auto Rotate"
+        Learning3DCapability.SELECTION -> "Selection"
+        Learning3DCapability.LABELS -> "Labels"
+        Learning3DCapability.DIMENSIONS -> "Dimensions"
+        Learning3DCapability.ANIMATION -> "Animation"
+        Learning3DCapability.CUTAWAY -> "Cutaway"
+        Learning3DCapability.NET_UNFOLD -> "Net Unfold"
+    }
 
 @Composable
 private fun ExperimentMenu(
