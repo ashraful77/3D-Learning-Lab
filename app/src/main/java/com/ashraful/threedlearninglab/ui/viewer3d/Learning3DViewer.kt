@@ -35,7 +35,9 @@ import io.github.sceneview.SceneView
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Size
+import io.github.sceneview.node.ConeNode
 import io.github.sceneview.node.CubeNode
+import io.github.sceneview.node.CylinderNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.node.SphereNode
 import io.github.sceneview.rememberCameraManipulator
@@ -179,6 +181,22 @@ fun Learning3DViewer(
 
                 Learning3DObjectType.SPHERE -> SphereNode(
                     radius = 0.65f,
+                    materialInstance = faceMaterials[0],
+                    rotation = Rotation(y = rotationY)
+                )
+
+                Learning3DObjectType.CYLINDER -> CylinderNode(
+                    radius = 0.7f,
+                    height = 1.5f,
+                    sideCount = 40,
+                    materialInstance = faceMaterials[0],
+                    rotation = Rotation(y = rotationY)
+                )
+
+                Learning3DObjectType.CONE -> ConeNode(
+                    radius = 0.9f,
+                    height = 1.8f,
+                    sideCount = 40,
                     materialInstance = faceMaterials[0],
                     rotation = Rotation(y = rotationY)
                 )
