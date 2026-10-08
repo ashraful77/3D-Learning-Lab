@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.sceneview.SceneView
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
@@ -124,7 +126,7 @@ fun SolarSystemViewer(
                     intensity = 100_000f
                 },
                 cameraManipulator = rememberCameraManipulator(
-                    orbitRadius = if (selectedTarget == "overview") 16f else 4.5f,
+                    orbitRadius = if (selectedTarget == "overview") 24f else 4.5f,
                     targetPosition = targetPosition
                 )
             ) {
@@ -269,32 +271,53 @@ fun SolarSystemViewer(
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .fillMaxWidth(0.96f)
                 .navigationBarsPadding()
-                .padding(12.dp),
+                .padding(8.dp),
             shape = MaterialTheme.shapes.medium,
             tonalElevation = 8.dp
         ) {
             Column(
-                modifier = Modifier.padding(10.dp),
+                modifier = Modifier.padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = {
-                        orbitRunning = !orbitRunning
-                    }) {
-                        Text(if (orbitRunning) "Pause Orbit" else "Resume Orbit")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(horizontal = 6.dp)
+                    ) {
+                        Text(
+                            if (orbitRunning) "Pause Orbit" else "Resume Orbit",
+                            maxLines = 1,
+                            fontSize = 12.sp
+                        )
                     }
 
-                    Button(onClick = {
-                        showOrbits = !showOrbits
-                    }) {
-                        Text(if (showOrbits) "Hide Orbits" else "Show Orbits")
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(horizontal = 6.dp),
+                        onClick = { showOrbits = !showOrbits }
+                    ) {
+                        Text(
+                            if (showOrbits) "Hide Orbits" else "Show Orbits",
+                            maxLines = 1,
+                            fontSize = 12.sp
+                        )
                     }
 
-                    Button(onClick = {
-                        selectedTarget = "overview"
-                    }) {
-                        Text("Reset Camera")
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(horizontal = 6.dp),
+                        onClick = { selectedTarget = "overview" }
+                    ) {
+                        Text(
+                            "Reset Camera",
+                            maxLines = 1,
+                            fontSize = 12.sp
+                        )
                     }
                 }
 
@@ -302,18 +325,21 @@ fun SolarSystemViewer(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Speed")
+                    Text("Speed", fontSize = 13.sp)
                     Slider(
                         value = speed,
                         onValueChange = { speed = it },
                         valueRange = 0.1f..5f,
                         modifier = Modifier.weight(1f)
                     )
-                    Text("%.1fx".format(speed))
+                    Text("%.1fx".format(speed), fontSize = 13.sp)
                 }
 
-                Button(onClick = onBack) {
-                    Text("← Astronomy")
+                Button(
+                    modifier = Modifier.fillMaxWidth(0.55f),
+                    onClick = onBack
+                ) {
+                    Text("← Astronomy", maxLines = 1)
                 }
             }
         }
