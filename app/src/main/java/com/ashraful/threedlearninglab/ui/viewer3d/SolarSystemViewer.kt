@@ -287,7 +287,8 @@ fun SolarSystemViewer(
                 ) {
                     Button(
                         modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(horizontal = 6.dp)
+                        contentPadding = PaddingValues(horizontal = 6.dp),
+                        onClick = { orbitRunning = !orbitRunning }
                     ) {
                         Text(
                             if (orbitRunning) "Pause Orbit" else "Resume Orbit",
