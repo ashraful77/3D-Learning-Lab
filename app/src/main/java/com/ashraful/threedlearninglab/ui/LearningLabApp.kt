@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ashraful.threedlearninglab.data.model.Learning3DObjectType
+import com.ashraful.threedlearninglab.data.model.Learning3DObject
+import com.ashraful.threedlearninglab.data.repository.Learning3DRepository
 import com.ashraful.threedlearninglab.ui.viewer3d.Learning3DViewer
 import com.ashraful.threedlearninglab.ui.viewer3d.GeometryStudioViewer
 import com.ashraful.threedlearninglab.ui.viewer3d.SolarSystemViewer
@@ -77,9 +79,14 @@ fun LearningLabApp() {
             }
         )
 
-        LabScreen.MATHEMATICS_OBJECTS -> GeometryCategoryMenu(
+        LabScreen.MATHEMATICS_OBJECTS -> ObjectMenu(
+            subject = selectedSubject,
             onBack = { screen = LabScreen.LIBRARY_SUBJECTS },
-            onGeometry = { screen = LabScreen.GEOMETRY_STUDIO }
+            onGeometryStudio = { screen = LabScreen.GEOMETRY_STUDIO },
+            onObjectSelected = {
+                selectedObject = it.type
+                screen = LabScreen.VIEWER
+            }
         )
 
         LabScreen.GEOMETRY_STUDIO -> GeometryStudioViewer(
@@ -252,121 +259,64 @@ private fun SubjectCard(
 
 
 @Composable
-private fun GeometryCategoryMenu(
-    onBack: () -> Unit,
-    onGeometry: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
-        Button(onClick = onBack) {
-            Text("← Subjects")
-        }
-
-        Text(
-            "Mathematics",
-            modifier = Modifier.padding(top = 20.dp),
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Text(
-            "Choose a category",
-            modifier = Modifier.padding(top = 6.dp, bottom = 20.dp),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Geometry", style = MaterialTheme.typography.titleLarge)
-                Text(
-                    "Interactive 3D Geometry Studio",
-                    modifier = Modifier.padding(top = 6.dp, bottom = 14.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Button(
-                    onClick = onGeometry,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Open Geometry Studio")
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun ObjectMenu(
     subject: LibrarySubject,
     onBack: () -> Unit,
-    onObjectSelected: (Learning3DObjectType) -> Unit
+    onGeometryStudio: () -> Unit,
+    onObjectSelected: (Learning3DObject) -> Unit
 ) {
-    val title = when (subject) {
-        LibrarySubject.MATHEMATICS -> "Mathematics"
-        LibrarySubject.ASTRONOMY -> "Astronomy"
+    val subjectId = when (subject) {
+        LibrarySubject.MATHEMATICS -> "mathematics"
+        LibrarySubject.ASTRONOMY -> "astronomy"
     }
-
-    val objects = when (subject) {
-        LibrarySubject.MATHEMATICS -> listOf(
-            Learning3DObjectType.CUBE,
-            Learning3DObjectType.SPHERE
-        )
-        LibrarySubject.ASTRONOMY -> emptyList()
-    }
+    val objects = Learning3DRepository.getBySubject(subjectId)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Button(onClick = onBack) {
-            Text("← Subjects")
-        }
+        Button(onClick = onBack) { Text("← Subjects") }
 
         Text(
-            title,
+            if (subject == LibrarySubject.MATHEMATICS) "Mathematics" else "Astronomy",
             modifier = Modifier.padding(top = 20.dp),
             style = MaterialTheme.typography.headlineMedium
         )
 
         Text(
-            when (subject) {
-                LibrarySubject.MATHEMATICS -> "Geometry"
-                LibrarySubject.ASTRONOMY -> "Coming next: Solar System"
-            },
-            modifier = Modifier.padding(top = 6.dp, bottom = 20.dp),
+            "3D Objects",
+            modifier = Modifier.padding(top = 6.dp, bottom = 12.dp),
             style = MaterialTheme.typography.titleMedium
         )
 
-        if (objects.isEmpty()) {
-            Text(
-                "The Solar System experience is being migrated from the supplied interactive HTML into the offline Android 3D library.",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(objects) { objectType ->
-                    val name = when (objectType) {
-                        Learning3DObjectType.CUBE -> "Cube"
-                        Learning3DObjectType.SPHERE -> "Sphere"
-                        else -> "3D Object"
-                    }
-                    Card {
-                        Button(
-                            onClick = { onObjectSelected(objectType) },
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(vertical = 28.dp)
-                        ) {
-                            Text(name)
-                        }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(objects) { objectItem ->
+                Card {
+                    Button(
+                        onClick = { onObjectSelected(objectItem) },
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(vertical = 24.dp)
+                    ) {
+                        Text(objectItem.name)
                     }
                 }
+            }
+        }
+
+        if (subject == LibrarySubject.MATHEMATICS) {
+            Button(
+                onClick = onGeometryStudio,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            ) {
+                Text("Open Geometry Studio")
             }
         }
     }
