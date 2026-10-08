@@ -103,7 +103,7 @@ fun GeometryStudioViewer(
             autoFitContent = false,
             mainLightNode = rememberMainLightNode(engine) { intensity = 100_000f },
             cameraManipulator = rememberCameraManipulator(
-                orbitRadius = 4.8f + resetToken * 0.001f,
+                orbitRadius = 7.0f + resetToken * 0.001f,
                 targetPosition = Position()
             )
         ) {
