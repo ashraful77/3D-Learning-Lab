@@ -130,20 +130,17 @@ fun SolarSystemViewer(
             ) {
                 val sunMaterial = remember(materialLoader) {
                     materialLoader.createColorInstance(
-                        Color(1f, 0.34f, 0.02f, 1f),
-                        unlit = true
+                        Color(1f, 0.34f, 0.02f, 1f)
                     )
                 }
                 val starMaterial = remember(materialLoader) {
                     materialLoader.createColorInstance(
-                        Color.White,
-                        unlit = true
+                        Color.White
                     )
                 }
                 val orbitMaterial = remember(materialLoader) {
                     materialLoader.createColorInstance(
-                        Color(0.10f, 0.14f, 0.22f, 1f),
-                        unlit = true
+                        Color(0.10f, 0.14f, 0.22f, 1f)
                     )
                 }
 
