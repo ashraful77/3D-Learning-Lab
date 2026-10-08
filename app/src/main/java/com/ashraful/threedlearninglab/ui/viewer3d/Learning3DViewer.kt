@@ -13,10 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.material3.Button
-import androidx.material3.MaterialTheme
-import androidx.material3.Surface
-import androidx.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -86,7 +86,7 @@ fun Learning3DViewer(
     fun setFullscreen(enabled: Boolean) {
         fullscreen = enabled
         activity?.let { window ->
-            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            val controller = WindowCompat.getInsetsController(window.window, window.window.decorView)
             if (enabled) {
                 controller.hide(WindowInsetsCompat.Type.systemBars())
             } else {
@@ -102,7 +102,7 @@ fun Learning3DViewer(
     DisposableEffect(activity) {
         onDispose {
             activity?.let { window ->
-                WindowCompat.getInsetsController(window, window.decorView)
+                WindowCompat.getInsetsController(window.window, window.window.decorView)
                     .show(WindowInsetsCompat.Type.systemBars())
             }
         }
