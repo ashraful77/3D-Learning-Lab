@@ -26,11 +26,25 @@ jobs:
         with:
           gradle-version: "9.3.1"
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug
+      - name: Restore release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "KEYSTORE_BASE64 GitHub secret is not configured."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > app/release-key.jks
 
-      - name: Upload debug APK
+      - name: Build signed release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: gradle :app:assembleRelease
+
+      - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: 3d-learning-lab-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: 3d-learning-lab-release
+          path: app/build/outputs/apk/release/app-release.apk
