@@ -36,6 +36,7 @@ import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberMainLightNode
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
+import io.github.sceneview.rememberOnGestureListener
 import kotlinx.coroutines.delay
 
 @Composable
@@ -66,9 +67,11 @@ fun Learning3DViewer(
     var rotationY by remember { mutableFloatStateOf(0f) }
     var resetToken by remember { mutableIntStateOf(0) }
     var loadTimedOut by remember { mutableStateOf(false) }
+    var selectedNode by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(objectType, glbInstance) {
         loadTimedOut = false
+        selectedNode = null
         if (objectType == Learning3DObjectType.GLB && glbInstance == null) {
             delay(5000L)
             loadTimedOut = true
@@ -121,7 +124,11 @@ fun Learning3DViewer(
                             ModelNode(
                                 modelInstance = instance,
                                 scaleToUnits = 1.0f,
-                                rotation = Rotation(y = rotationY)
+                                rotation = Rotation(y = rotationY),
+                                apply = {
+                                    isTouchable = true
+                                    name = "Prototype Cube"
+                                }
                             )
                         }
                     }
@@ -175,6 +182,22 @@ fun Learning3DViewer(
                         else -> "Loading GLB…"
                     },
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+
+        if (selectedNode != null) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(top = 110.dp),
+                shape = MaterialTheme.shapes.medium,
+                tonalElevation = 8.dp
+            ) {
+                Text(
+                    text = "Selected: $selectedNode",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
