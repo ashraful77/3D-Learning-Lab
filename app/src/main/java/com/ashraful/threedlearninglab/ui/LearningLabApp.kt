@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ashraful.threedlearninglab.data.model.Learning3DObjectType
 import com.ashraful.threedlearninglab.ui.viewer3d.Learning3DViewer
+import com.ashraful.threedlearninglab.ui.viewer3d.SolarSystemViewer
 
 private enum class LabArea {
     LIBRARY,
@@ -34,6 +35,7 @@ private enum class LabScreen {
     LIBRARY_SUBJECTS,
     MATHEMATICS_OBJECTS,
     EXPERIMENT_LIST,
+    SOLAR_SYSTEM,
     VIEWER
 }
 
@@ -69,7 +71,7 @@ fun LearningLabApp() {
             },
             onAstronomy = {
                 selectedSubject = LibrarySubject.ASTRONOMY
-                screen = LabScreen.MATHEMATICS_OBJECTS
+                screen = LabScreen.SOLAR_SYSTEM
             }
         )
 
@@ -88,6 +90,10 @@ fun LearningLabApp() {
                 selectedObject = it
                 screen = LabScreen.VIEWER
             }
+        )
+
+        LabScreen.SOLAR_SYSTEM -> SolarSystemViewer(
+            onBack = { screen = LabScreen.LIBRARY_SUBJECTS }
         )
 
         LabScreen.VIEWER -> {
